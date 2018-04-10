@@ -30,9 +30,30 @@ class ViewController: UITableViewController {
         ["David", "Dan"],
         ["Patrick", "Patty"]
     ]
+    
+    var showIndexPaths = false
 
+    @objc func handleShowIndexPath() {
+        var indexPathsToReload = [IndexPath]()
+        
+        for section in twoDimensionalArray.indices {
+            for row in twoDimensionalArray[section].indices {
+                let indexPath = IndexPath(row: row, section: section)
+                indexPathsToReload.append(indexPath)
+            }
+        }
+        
+        showIndexPaths = !showIndexPaths
+        
+        let animationStyle = showIndexPaths ? UITableViewRowAnimation.right : .left
+        
+        tableView.reloadRows(at: indexPathsToReload, with: animationStyle)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Show IndexPath", style: .plain, target: self, action: #selector(handleShowIndexPath))
        
         title = "Contacts"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -53,24 +74,18 @@ class ViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return twoDimensionalArray[section].count
-//        if section == 0 {
-//            return names.count
-//        }
-//        return cNames.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
-        
-//        let name = names[indexPath.row]
-//        let name = indexPath.section == 0 ? names[indexPath.row] : cNames[indexPath.row]
         let name = twoDimensionalArray[indexPath.section][indexPath.row]
         
         cell.textLabel?.text = name
         
-        cell.textLabel?.text = "\(name) Section:\(indexPath.section) Row:\(indexPath.row)"
-        
+        if showIndexPaths {
+            cell.textLabel?.text = "\(name) Section:\(indexPath.section) Row:\(indexPath.row)"
+        }
+
         return cell
     }
 }
-
